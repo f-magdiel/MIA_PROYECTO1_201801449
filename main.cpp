@@ -1,6 +1,10 @@
 #include <iostream>
+#include "Inicio/Inicio.h"
 
+using namespace std;
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    inicio();
     return 0;
 }
+
+
