@@ -90,6 +90,12 @@ build CMakeFiles/MIA_PROYECTO1_201801449.dir/Inicio/Inicio.cpp.o: CXX_COMPILER__
   OBJECT_DIR = CMakeFiles/MIA_PROYECTO1_201801449.dir
   OBJECT_FILE_DIR = CMakeFiles/MIA_PROYECTO1_201801449.dir/Inicio
 
+build CMakeFiles/MIA_PROYECTO1_201801449.dir/Comandos/mkdisk.cpp.o: CXX_COMPILER__MIA_PROYECTO1_201801449_Debug /home/magdiel/Escritorio/MIA_PROYECTO1_201801449/Comandos/mkdisk.cpp || cmake_object_order_depends_target_MIA_PROYECTO1_201801449
+  DEP_FILE = CMakeFiles/MIA_PROYECTO1_201801449.dir/Comandos/mkdisk.cpp.o.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles/MIA_PROYECTO1_201801449.dir
+  OBJECT_FILE_DIR = CMakeFiles/MIA_PROYECTO1_201801449.dir/Comandos
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target MIA_PROYECTO1_201801449
@@ -98,7 +104,7 @@ build CMakeFiles/MIA_PROYECTO1_201801449.dir/Inicio/Inicio.cpp.o: CXX_COMPILER__
 #############################################
 # Link the executable MIA_PROYECTO1_201801449
 
-build MIA_PROYECTO1_201801449: CXX_EXECUTABLE_LINKER__MIA_PROYECTO1_201801449_Debug CMakeFiles/MIA_PROYECTO1_201801449.dir/main.cpp.o CMakeFiles/MIA_PROYECTO1_201801449.dir/Analizador/Analizador.cpp.o CMakeFiles/MIA_PROYECTO1_201801449.dir/Inicio/Inicio.cpp.o
+build MIA_PROYECTO1_201801449: CXX_EXECUTABLE_LINKER__MIA_PROYECTO1_201801449_Debug CMakeFiles/MIA_PROYECTO1_201801449.dir/main.cpp.o CMakeFiles/MIA_PROYECTO1_201801449.dir/Analizador/Analizador.cpp.o CMakeFiles/MIA_PROYECTO1_201801449.dir/Inicio/Inicio.cpp.o CMakeFiles/MIA_PROYECTO1_201801449.dir/Comandos/mkdisk.cpp.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/MIA_PROYECTO1_201801449.dir
   POST_BUILD = :
