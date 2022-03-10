@@ -2,8 +2,29 @@
 #include <string>
 #include <cstring>
 #include <cstdio>
+#include <ctime>
 
 using namespace std;
+ typedef struct{
+    char part_status;
+    char part_type;
+    char part_fit;
+    int part_start;
+    int part_size;
+    char part_name[16];
+}PARTICION;
+
+struct MBR{
+    int mbr_tamano;
+    time_t mbr_fecha_creacion;
+    int mbr_dsk_signature;
+    char dsk_fit;
+    PARTICION particion[4];
+};
+
+//cracion mbr
+typedef struct MBR mbr;
+
 
 
 char lineacomando[100]="";
@@ -150,7 +171,7 @@ void analisismkdisk(char comando[]){
     }
 
     //creacion de discos
-
+    
 }
 
 
