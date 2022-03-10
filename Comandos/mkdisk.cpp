@@ -171,7 +171,7 @@ void analisismkdisk(char comando[]){
     }
 
     //creacion de discos
-    
+
 }
 
 
