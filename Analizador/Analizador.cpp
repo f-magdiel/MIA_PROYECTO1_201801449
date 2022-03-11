@@ -2,14 +2,13 @@
 #include "Analizador.h"
 #include "../Comandos/mkdisk.h"
 #include "../Comandos/exec.h"
+
 #include <string>
 #include <fstream>
 #include <cstring>
 #include <cstdio>
 
 using namespace std;
-
-
 
 //solo se detecta el comando principal y se manda a llamar otra funcion para que ejecute el comando completo
 void analizarComando(char comando[]){
@@ -52,6 +51,8 @@ void analizarComando(char comando[]){
         }else if(strcmp(lineacomandos,"mkdisk")==0){//para crear un disco
             analisismkdisk(comando);
             memset(lineacomandos,0,100);
+        }else{
+
         }
     }
 

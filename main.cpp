@@ -1,9 +1,35 @@
 #include <iostream>
-#include "Inicio/Inicio.h"
-
+#include <cstring>
+#include "./Analizador/Analizador.h"
 using namespace std;
+
 int main() {
-    inicio();
+    //inicio();
+    bool salir=false;
+    char comando [100]="";
+    //comando[0]=0;
+    while(!salir){
+        cout << "---------------------------------------------"<<endl;
+        cout << "| PROYECTO 1                                |" <<endl;
+        cout << "| MANEJO E IMPLEMENTACION DE ARCHIVOS       |"<<endl;
+        cout << "| FRANCISCO MAGDIEL ASICONA MATEO 201801449 |"<<endl;
+        cout << "| PRIMER SEMESTRE 2022                      |"<<endl;
+        cout << "---------------------------------------------"<<endl;
+        cout << "Ingresar comando > ";
+        scanf("%[^\n]",comando);
+        if(strcmp(comando,"salir")==0){
+            salir = true;
+        }else{
+            if(strcmp(comando,"")!=0){
+                analizarComando(comando);
+                //memset(comando,0,100);
+                printf("\n");
+            }
+        }
+        //comando[0]=0;
+        getchar();
+
+    }
     return 0;
 }
 

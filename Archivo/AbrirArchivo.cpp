@@ -4,7 +4,7 @@
 #include <fstream>
 #include <cstdio>
 #include "../Analizador/Analizador.h"
-
+#include "../Inicio/Inicio.h"
 using namespace std;
 
 void abrirArchivo(char path[100]){
@@ -17,7 +17,7 @@ void abrirArchivo(char path[100]){
         char lineacomando[200]="";
         char caracter;
 
-        while(!feof(archivo)){//mientras no sea el fin del archivo
+        while(feof(archivo)==0){//mientras no sea el fin del archivo
             while((caracter=fgetc(archivo))!='\n'){
                 char aux[1]="";
                 aux[0] = caracter;
@@ -25,9 +25,10 @@ void abrirArchivo(char path[100]){
 
             }
             printf("Palabra: %s\n",lineacomando);
-            analizarComando(lineacomando);//se manda al analizador cada linea del archivo
+            //analizarComando(lineacomando);//se manda al analizador cada linea del archivo
             memset(lineacomando,0,200);
         }
+
     }
 
 }
