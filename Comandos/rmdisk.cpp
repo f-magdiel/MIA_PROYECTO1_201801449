@@ -118,8 +118,14 @@ void analisisrmdisk(char comando[]){
     if(bandera_rmdisk==true){
         bool banderapath = validacionPathFile(path);
         if(banderapath==true){
+            char res;
             printf("El disco existe, se procede a eliminar \n");
-            eliminacionDisco(path);
+            printf("Desea eliminarlo (S/N) : ");
+            cin >> res;
+            if(res=='S' || res=='s'){
+                eliminacionDisco(path);
+            }
+
         }else{
             printf("El disco no existe \n");
         }
