@@ -18,7 +18,7 @@ void abrirArchivo(char path[100]){
         char caracter;
 
         while(feof(archivo)==0){//mientras no sea el fin del archivo
-            while((caracter=fgetc(archivo))!='\n'){
+            while((caracter=fgetc(archivo))!='\n'&& feof(archivo)==0){
                 char aux[1]="";
                 aux[0] = caracter;
                 strncat(lineacomando,aux,1);

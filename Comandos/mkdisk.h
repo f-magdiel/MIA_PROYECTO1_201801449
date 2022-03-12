@@ -4,6 +4,7 @@
 #include <string>
 #include <ctime>
 
+using namespace std;
 
 typedef struct PARTICION{
     char part_status;
@@ -26,7 +27,7 @@ typedef struct MBR{
 }MBR;
 
 void analisismkdisk(char []);
-bool validacionPath(char []);
+bool validacionPath(string);
 void creacionDisco(bool,bool,bool,bool,char[],char[],char,char);
-
+bool validacionFile(string);
 #endif //MIA_PROYECTO1_201801449_MKDISK_H

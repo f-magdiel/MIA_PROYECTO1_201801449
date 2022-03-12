@@ -9,6 +9,16 @@
 using namespace std;
 
 char lineacomando[100]="";
+bool validacionFile(string path){
+ FILE *file;
+ if(file = fopen(path.c_str(),"r")){
+     fclose(file);
+     return true;
+ }else{
+
+     return false;
+ }
+}
 
 bool validacionPath(string path){
     DIR *directorio;//puntero de un directorio
@@ -16,6 +26,7 @@ bool validacionPath(string path){
         closedir(directorio);
         return true;
     }else{
+
         return false;
     }
 
@@ -85,6 +96,7 @@ void analisismkdisk(char comando[]){
     char valor_path[100]="";
     char valor_path_real[100]="";
     string directorio="";
+    string directorio_file="";
     bool banderamkdisk = false;
     bool banderasize = false;
     bool banderafit = false;
@@ -273,12 +285,24 @@ void analisismkdisk(char comando[]){
             cont++;
         }
     }
+    int contar=0;
+    while(valor_path_real[contar]!=NULL){//para validar si ya existe archivo
+        directorio_file+=valor_path_real[contar];
+        contar++;
+    }
     printf("Solo directorio %s\n",directorio.c_str());
     //validacion carpeta
-    bool banderaruta = validacionPath(directorio);
+    bool banderaruta = validacionPath(directorio);//metodo que valida si existe directorio
+    bool banderafile = validacionFile(directorio_file);//metodo para validar si existe el archivos
     if(banderaruta==true){//existe directorio
         printf("Directorio Existente%s\n");
-        creacionDisco(banderasize,banderafit,banderaunit,banderapath,valor_size,valor_path_real,valor_unit,valor_fit);
+        if(banderafile==true){
+            printf("El disco ya existe \n");
+        }else{
+            printf("El disco no existe, se procede la creacion \n");
+            creacionDisco(banderasize,banderafit,banderaunit,banderapath,valor_size,valor_path_real,valor_unit,valor_fit);
+        }
+
     }else{//no existen las carpetas
         printf("Directorio no Existe %s\n");
         //EDICIONES AL PATH***************************
