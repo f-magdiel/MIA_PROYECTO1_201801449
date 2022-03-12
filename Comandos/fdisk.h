@@ -1,0 +1,5 @@
+#ifndef MIA_PROYECTO1_201801449_FDISK_H
+#define MIA_PROYECTO1_201801449_FDISK_H
+
+void analisisfdisk(char[]);
+#endif //MIA_PROYECTO1_201801449_FDISK_H
