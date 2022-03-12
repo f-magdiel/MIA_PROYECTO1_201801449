@@ -51,8 +51,6 @@ void analizarComando(char comando[]){
         }else if(strcmp(lineacomandos,"mkdisk")==0){//para crear un disco
             analisismkdisk(comando);
             memset(lineacomandos,0,100);
-        }else{
-
         }
     }
 

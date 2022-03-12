@@ -71,7 +71,7 @@ void creacionDisco(bool band_size,bool band_fit,bool band_unit,bool band_path,ch
         for (int i = start; i < tamano_disco_bytes; ++i) {
             fwrite("0",1,1,file);
         }
-        fclose(file);
+        fclose(file);// se cierra el file
         printf("Disco creado correctamento en %s\n",val_path);
     }
 
