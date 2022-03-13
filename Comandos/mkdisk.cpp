@@ -34,7 +34,8 @@ bool validacionPath(string path){
 
 void creacionDisco(bool band_size,bool band_fit,bool band_unit,bool band_path,char val_size[20],char val_path[100],char val_unit ,char val_fit){
     //validacion de comandos y su valor
-    MBR* mbr = (MBR*) malloc(sizeof(MBR));
+    MBR* mbr = (MBR*) malloc(sizeof(MBR));//iniciando el mbr
+    EBR* ebr = (EBR*) malloc(sizeof(EBR));//iniciando el ebr
 
     int size_disk=0;
     int tamano_disco_bytes=0;
@@ -75,11 +76,40 @@ void creacionDisco(bool band_size,bool band_fit,bool band_unit,bool band_path,ch
         time_t tiempo_actual; // se crea una variable para el tiempo
         tiempo_actual = time(NULL);// se genera el tiempo en segundos
         mbr->mbr_fecha_creacion = tiempo_actual; // se guarda en el mbr
+        //inicializando particion mbr
+        //particion -> 1
+        mbr->mbr_particion_1->part_status = '0'; //particion inactiva
+        mbr->mbr_particion_1->part_type = '-';//tipo particion no definida
+        mbr->mbr_particion_1->part_fit = '-';//tipo de ajuste no definida
+        mbr->mbr_particion_1->part_start = 0;//inicio  de particion es nula
+        mbr->mbr_particion_1->part_size = 0;//tamaño de particion es nula
+        //particion -> 2
+        mbr->mbr_particion_2->part_status = '0'; //particion inactiva
+        mbr->mbr_particion_2->part_type = '-';//tipo particion no definida
+        mbr->mbr_particion_2->part_fit = '-';//tipo de ajuste no definida
+        mbr->mbr_particion_2->part_start = 0;//inicio  de particion es nula
+        mbr->mbr_particion_2->part_size = 0;//tamaño de particion es nula
+        //particion -> 3
+        mbr->mbr_particion_3->part_status = '0'; //particion inactiva
+        mbr->mbr_particion_3->part_type = '-';//tipo particion no definida
+        mbr->mbr_particion_3->part_fit = '-';//tipo de ajuste no definida
+        mbr->mbr_particion_3->part_start = 0;//inicio  de particion es nula
+        mbr->mbr_particion_3->part_size = 0;//tamaño de particion es nula
+        //particion -> 4
+        mbr->mbr_particion_4->part_status = '0'; //particion inactiva
+        mbr->mbr_particion_4->part_type = '-';//tipo particion no definida
+        mbr->mbr_particion_4->part_fit = '-';//tipo de ajuste no definida
+        mbr->mbr_particion_4->part_start = 0;//inicio  de particion es nula
+        mbr->mbr_particion_4->part_size = 0;//tamaño de particion es nula
+        //inicializando particion extendida
+
+
+        //se empieza a crear el disco
         FILE *file; // se crea el file
-        file = fopen(val_path,"wb+");// se pasa la ruta para crear el disco
+        file = fopen(val_path,"w+b");// se pasa la ruta para crear el disco
         fseek(file,0,SEEK_SET);// se posiciona en el inicio del disco
         fwrite(mbr,sizeof(MBR),1,file);//se escribe el mbr el incio del disco
-        for (int i = start; i < tamano_disco_bytes; ++i) {
+        for (int i = start; i < tamano_disco_bytes; ++i) {// se llena el disco con 0
             fwrite("0",1,1,file);
         }
         fclose(file);// se cierra el file
@@ -131,7 +161,7 @@ void analisismkdisk(char comando[]){
             //llenado de valor
             //para el comando valor size,fit,unit y path
             while(comando[contador]!=NULL){
-                if(comando[contador]==' '){
+                if(comando[contador]==' ' || comando[contador]=='\n'){
                     contador++;
                     break;
 
@@ -212,7 +242,7 @@ void analisismkdisk(char comando[]){
                         }
                     }
                 }else{
-                    if(comando[contador]==' '){
+                    if(comando[contador]==' ' || comando[contador]=='\n'){
                         contador++;
                         break;
 

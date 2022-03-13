@@ -74,12 +74,12 @@
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+    <configuration name="MIA_PROYECTO1_201801449" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MIA_PROYECTO1_201801449" TARGET_NAME="MIA_PROYECTO1_201801449" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="MIA_PROYECTO1_201801449" RUN_TARGET_NAME="MIA_PROYECTO1_201801449">
       <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="MIA_PROYECTO1_201801449" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MIA_PROYECTO1_201801449" TARGET_NAME="MIA_PROYECTO1_201801449" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="MIA_PROYECTO1_201801449" RUN_TARGET_NAME="MIA_PROYECTO1_201801449">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -102,7 +102,8 @@
       <workItem from="1646839158033" duration="32488000" />
       <workItem from="1646946584715" duration="26594000" />
       <workItem from="1647039303909" duration="5427000" />
-      <workItem from="1647060562227" duration="10682000" />
+      <workItem from="1647060562227" duration="10792000" />
+      <workItem from="1647117487559" duration="21619000" />
     </task>
     <servers />
   </component>
