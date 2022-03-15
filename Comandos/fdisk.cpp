@@ -8,6 +8,38 @@
 using namespace std;
 char linecomandos[100]="";
 
+bool validacionExtendida(MBR* mbr){
+    bool bandera_Ext=false;
+    if(mbr->mbr_particion_1.part_type=='e'){
+        return true;
+    }
+    if(mbr->mbr_particion_2.part_type=='e'){
+        return true;
+    }
+    if(mbr->mbr_particion_3.part_type=='e'){
+        return true;
+    }
+    if(mbr->mbr_particion_4.part_type=='e'){
+        return true;
+    }
+    return false;
+}
+
+bool validacionNombre(MBR* mbr,char name[]){
+    if(strcmp(mbr->mbr_particion_1.part_name,name)==0){
+        return true;
+    }
+    if(strcmp(mbr->mbr_particion_2.part_name,name)==0){
+        return true;
+    }
+    if(strcmp(mbr->mbr_particion_3.part_name,name)==0){
+        return true;
+    }
+    if(strcmp(mbr->mbr_particion_4.part_name,name)==0){
+        return true;
+    }
+    return false;
+}
 
 bool validacionFile(char path[100]){
     FILE *file;
@@ -19,44 +51,277 @@ bool validacionFile(char path[100]){
     }
 }
 
+int contadorPrimaria(MBR* mbr){
+    int contadorPri=0;
+    if('p' == mbr->mbr_particion_1.part_type){ //particion 1
+        contadorPri++;
+    }
+
+    if('p' == mbr->mbr_particion_2.part_type ){//particion 2
+        contadorPri++;
+    }
+
+    if('p' == mbr->mbr_particion_3.part_type){//particion 3
+        contadorPri++;
+    }
+
+    if('p' == mbr->mbr_particion_4.part_type){//particion 4
+        contadorPri++;
+    }
+    return contadorPri; // retorno el contador de las particiones primaria existentes
+}
+
+int contadorExt(MBR *mbr){
+    int contadorExtendida=0;
+    if(mbr->mbr_particion_1.part_type=='e'){ // particion 1 si es ext
+        contadorExtendida++;
+    }else if(mbr->mbr_particion_2.part_type=='e'){//pariticion 2 si es ext
+        contadorExtendida++;
+    }else if(mbr->mbr_particion_3.part_type=='e'){//particion 3 si es ext
+        contadorExtendida++;
+    }else if(mbr->mbr_particion_4.part_type=='e'){// particion 4 si es ext
+        contadorExtendida++;
+    }
+    return contadorExtendida;
+
+}
+
+int charToInt(char size[]){
+    int conta=0;
+    string num="";
+    int numero;
+    while(size[conta]!=NULL){
+        num+=size[conta];
+        conta++;
+    }
+    numero = stoi(num);
+    return numero;
+}
+
 //metodo para crear particiones->solo para crear
-void crearParticion(char _size[],char _unit,char _path[],char _type,char _fit,char _name[]){
+void crearParticion(int _size,char _unit,char _path[],char _type,char _fit,char _name[]){
     bool flag_file = validacionFile(_path);//metodo para comprobar que si exista le disco
     if(flag_file==true){//existe disco
         printf("Existe el disco, se procede con la particion \n");
-        //primero que tipo de particion se necesita E o P
-        if(){
-
-        }else  if(){
-
-        }
-        //se lee el disco
+        //se lee el disco para obtener informacion
         FILE *file;
         MBR* mbr = (MBR*)malloc(sizeof(MBR));// se crea un struct para poder leer
-        file = fopen(_path,"rb+");// se leer archivo
+        file = fopen(_path,"rb+");// se lee el archivo y se actualiza
+        fseek(file,0,SEEK_SET);
         fread(mbr,sizeof (MBR),1,file); // se obtien el mbr
-        //nombre no debe repetirse en una particion
-        if(strcmp(mbr->mbr_particion_1->part_name,_name)==0 ||strcmp(mbr->mbr_particion_2->part_name,_name)==0||strcmp(mbr->mbr_particion_3->part_name,_name)==0||strcmp(mbr->mbr_particion_4->part_name,_name)==0 ){
-            printf("Error -> Nombre de particion se repite %s\n",_name);
-        }else{
-            printf("Nombre de particion no se repite \n");
-            //que particion esta disponible
-            if(mbr->mbr_particion_1->part_status == '0'){// particion 1, esta disponible
-                if(mbr->mbr_particion_1->part_fit=='-'){//aun no hay particion
+        //contadores
+        int contadorP= contadorPrimaria(mbr);
+        int contadorE= contadorExt(mbr);
 
-                }else{// ya hay particion
+        //primero que tipo de particion se necesita P o E o L
+        if(_type=='p'){
+            if(contadorP<4){// Hay espacio para una primaria
+                //no se repite nombres de particiones
+                bool ban_name = validacionNombre(mbr,_name);
+                if(!ban_name){//no se repite
+
+                    //consulto cada particion primaria cual esta disponible
+                    //particion 1
+                    if(mbr->mbr_particion_1.part_type=='-'){// -, está disponible
+                        // si hay espacio disponible
+                        int tamanoTotal = mbr->mbr_tamano;
+                        int tamanoDisponible= tamanoTotal-sizeof (MBR);
+
+                        if(tamanoDisponible>_size){ // si disponible es mayor de particion
+                            mbr->mbr_particion_1.part_status='1'; // se activa
+                            mbr->mbr_particion_1.part_type = _type;
+                            mbr->mbr_particion_1.part_fit = _fit;
+                            mbr->mbr_particion_1.part_start = sizeof(MBR)+1;
+                            mbr->mbr_particion_1.part_size = _size;
+                            strcpy(mbr->mbr_particion_1.part_name,_name);
+                            // se procede a escribir
+                            //se ubica la posicion
+                            fseek(file,mbr->mbr_particion_1.part_start,SEEK_SET);
+                            //se escribe
+                            fwrite(&mbr->mbr_particion_1,sizeof(mbr->mbr_particion_1),1,file);
+                            fclose(file);// se cierra
+                            printf("Particion 1 realizado correctamente \n");
+                        }else{
+                            printf("Espacio insufuciente para crear particion\n");
+                        }
+
+                    }else if(mbr->mbr_particion_2.part_type=='-'){//particion 2
+                        // si hay espacio disponible
+                        int tamanoTotal = mbr->mbr_tamano;
+                        int tamanoP1 = mbr->mbr_particion_1.part_size;
+                        int tamanoDisponible= tamanoTotal-tamanoP1-sizeof (MBR);
+                        if(tamanoDisponible>_size){
+                            mbr->mbr_particion_2.part_status='1'; // se activa
+                            mbr->mbr_particion_2.part_type = _type;
+                            mbr->mbr_particion_2.part_fit = _fit;
+                            mbr->mbr_particion_2.part_start = sizeof(MBR)+sizeof (mbr->mbr_particion_1)+1;
+                            mbr->mbr_particion_2.part_size = _size;
+                            strcpy(mbr->mbr_particion_2.part_name,_name);
+                            fseek(file,mbr->mbr_particion_2.part_start,SEEK_SET);
+                            fwrite(&mbr->mbr_particion_2,sizeof (mbr->mbr_particion_2),1,file);
+                            fclose(file);
+                            printf("Particion 2 realizado correctamente \n");
+                        }else{
+                            printf("Espacio insufuciente para crear particion\n");
+                        }
+
+                    }else if(mbr->mbr_particion_3.part_type=='-'){//particion 3
+                        // si hay espacio disponible
+                        int tamanoTotal = mbr->mbr_tamano;
+                        int tamanoP1 = mbr->mbr_particion_1.part_size;
+                        int tamanoP2 = mbr->mbr_particion_2.part_size;
+                        int tamanoDisponible= tamanoTotal-tamanoP1-tamanoP2-sizeof (MBR);
+                        if(tamanoDisponible>_size){
+                            mbr->mbr_particion_3.part_status='1'; // se activa
+                            mbr->mbr_particion_3.part_type = _type;
+                            mbr->mbr_particion_3.part_fit = _fit;
+                            mbr->mbr_particion_3.part_start = sizeof(MBR)+sizeof (mbr->mbr_particion_1)+sizeof (mbr->mbr_particion_2)+1;
+                            mbr->mbr_particion_3.part_size = _size;
+                            strcpy(mbr->mbr_particion_3.part_name,_name);
+                            fseek(file,mbr->mbr_particion_3.part_start,SEEK_SET);
+                            fwrite(&mbr->mbr_particion_3,sizeof (mbr->mbr_particion_3),1,file);
+                            fclose(file);
+                            printf("Particion 3 realizado correctamente \n");
+                        }else{
+                            printf("Espacio insufuciente para crear particion\n");
+                        }
+
+                    }else if(mbr->mbr_particion_4.part_type=='-'){//particion 4
+                        // si hay espacio disponible
+                        int tamanoTotal = mbr->mbr_tamano;
+                        int tamanoP1 = mbr->mbr_particion_1.part_size;
+                        int tamanoP2 = mbr->mbr_particion_2.part_size;
+                        int tamanoP3 = mbr->mbr_particion_3.part_size;
+                        int tamanoDisponible= tamanoTotal-tamanoP1-tamanoP2-tamanoP3-sizeof (MBR);
+
+                        if(tamanoDisponible>_size){
+                            mbr->mbr_particion_4.part_status='1'; // se activa
+                            mbr->mbr_particion_4.part_type = _type;
+                            mbr->mbr_particion_4.part_fit = _fit;
+                            mbr->mbr_particion_4.part_start = sizeof(MBR)+sizeof (mbr->mbr_particion_1)+sizeof (mbr->mbr_particion_2)+sizeof (mbr->mbr_particion_3)+1;
+                            mbr->mbr_particion_4.part_size = _size;
+                            strcpy(mbr->mbr_particion_4.part_name,_name);
+                            fseek(file,mbr->mbr_particion_4.part_start,SEEK_SET);
+                            fwrite(&mbr->mbr_particion_4,sizeof (mbr->mbr_particion_4),1,file);
+                            fclose(file);
+                            printf("Particion 4 realizado correctamente \n");
+                        }else{
+                            printf("Espacio insufuciente para crear particion\n");
+                        }
+
+                    }else{
+                        printf("Ya no está disponible una particion \n");
+                    }
+                }else{//se repite
+                    printf("Se repite un nombre de la particion, No es posible crearla \n");
+                }
+
+
+            }else{//ya no hay espacio para una primaria
+                printf("Ya no es posible crear una particion primaria, ya existen 4 \n");
+            }
+        }else  if(_type=='e'){
+            if(contadorE<1){//Hay espacio para una extendida
+                bool band_name = validacionNombre(mbr,_name);
+                if(!band_name){// no se repite nombre
+                    //veo cual esta disponible particion
+                    if(mbr->mbr_particion_1.part_type=='-'){
+                        //si hay particion pero se calcula espacio
+                        int tamanoTotal = mbr->mbr_tamano;
+                        int tamanoDispo = tamanoTotal-sizeof (MBR);
+                        //si espacio es suficiente para la particion
+                        if(tamanoDispo>_size){
+                            mbr->mbr_particion_1.part_status = '1';
+                            mbr->mbr_particion_1.part_type = _type;
+                            mbr->mbr_particion_1.part_fit = _fit;
+                            mbr->mbr_particion_1.part_start = sizeof(MBR)+1;
+                            mbr->mbr_particion_1.part_size = _size;
+                            strcpy(mbr->mbr_particion_1.part_name,_name);
+                            fseek(file,mbr->mbr_particion_1.part_start,SEEK_SET);
+                            fwrite(&mbr->mbr_particion_1,sizeof (mbr->mbr_particion_1),1,file);
+                            fclose(file);
+                            printf("Particion  extendida creada correctamente \n");
+                        }else{
+                            printf("Ya no hay espacio disponible para una particion extendida \n");
+                        }
+
+
+                    }else if(mbr->mbr_particion_2.part_type=='-'){
+                        //si hay particion pero se calcula espacio
+                        int tamanoTotal = mbr->mbr_tamano;
+                        int tamanoP1 = mbr->mbr_particion_1.part_size;
+                        int tamanoDispo = tamanoTotal-tamanoP1-sizeof (MBR);
+                        //si espacio es suficiente para la particion
+                        if(tamanoDispo>_size){
+                            mbr->mbr_particion_2.part_status = '1';
+                            mbr->mbr_particion_2.part_type = _type;
+                            mbr->mbr_particion_2.part_fit = _fit;
+                            mbr->mbr_particion_2.part_start = sizeof(MBR)+tamanoP1+1;
+                            mbr->mbr_particion_2.part_size = _size;
+                            strcpy(mbr->mbr_particion_2.part_name,_name);
+                            fseek(file,mbr->mbr_particion_2.part_start,SEEK_SET);
+                            fwrite(&mbr->mbr_particion_2,sizeof (mbr->mbr_particion_2),1,file);
+                            fclose(file);
+                            printf("Particion  extendida creada correctamente \n");
+                        }else{
+                            printf("Ya no hay espacio disponible para una particion extendida \n");
+                        }
+                    }else if(mbr->mbr_particion_3.part_type=='-'){
+                        //si hay particion pero se calcula espacio
+                        int tamanoTotal = mbr->mbr_tamano;
+                        int tamanoP1 = mbr->mbr_particion_1.part_size;
+                        int tamanoP2 = mbr->mbr_particion_2.part_size;
+                        int tamanoDispo = tamanoTotal-tamanoP1-tamanoP2-sizeof (MBR);
+                        //si espacio es suficiente para la particion
+                        if(tamanoDispo>_size){
+                            mbr->mbr_particion_3.part_status = '1';
+                            mbr->mbr_particion_3.part_type = _type;
+                            mbr->mbr_particion_3.part_fit = _fit;
+                            mbr->mbr_particion_3.part_start = sizeof(MBR)+tamanoP1+tamanoP2+1;
+                            mbr->mbr_particion_3.part_size = _size;
+                            strcpy(mbr->mbr_particion_3.part_name,_name);
+                            fseek(file,mbr->mbr_particion_3.part_start,SEEK_SET);
+                            fwrite(&mbr->mbr_particion_3,sizeof (mbr->mbr_particion_3),1,file);
+                            fclose(file);
+                            printf("Particion  extendida creada correctamente \n");
+                        }else{
+                            printf("Ya no hay espacio disponible para una particion extendida \n");
+                        }
+                    }else if(mbr->mbr_particion_4.part_type=='-'){
+                        //si hay particion pero se calcula espacio
+                        int tamanoTotal = mbr->mbr_tamano;
+                        int tamanoP1 = mbr->mbr_particion_1.part_size;
+                        int tamanoP2 = mbr->mbr_particion_2.part_size;
+                        int tamanoP3 = mbr->mbr_particion_3.part_size;
+                        int tamanoDispo = tamanoTotal-tamanoP1-tamanoP2-tamanoP3-sizeof (MBR);
+                        //si espacio es suficiente para la particion
+                        if(tamanoDispo>_size){
+                            mbr->mbr_particion_4.part_status = '1';
+                            mbr->mbr_particion_4.part_type = _type;
+                            mbr->mbr_particion_4.part_fit = _fit;
+                            mbr->mbr_particion_4.part_start = sizeof(MBR)+tamanoP1+tamanoP2+tamanoP3+1;
+                            mbr->mbr_particion_4.part_size = _size;
+                            strcpy(mbr->mbr_particion_4.part_name,_name);
+                            fseek(file,mbr->mbr_particion_4.part_start,SEEK_SET);
+                            fwrite(&mbr->mbr_particion_4,sizeof (mbr->mbr_particion_4),1,file);
+                            fclose(file);
+                            printf("Particion  extendida creada correctamente \n");
+                        }else{
+                            printf("Ya no hay espacio disponible para una particion extendida \n");
+                        }
+                    }else{
+                        printf("Ya no hay particion disponible para una extendida\n");
+                    }
+                }else{//se repite nombre
 
                 }
-            }else if(mbr->mbr_particion_2->part_status=='0'){
-
-            }else if(mbr->mbr_particion_3->part_status=='0'){
-
-            }else if(mbr->mbr_particion_4->part_status=='0'){
-
-            }else{
-                printf("Ya no es posible crear esta particion \n");
+            }else{// ya no hay espacio para una extendida
+                printf("Ya no es posible crear una particion extendida, ya existe una \n");
             }
+        }else if(_type=='l'){
+            //ebr
         }
+
 
     }else{//no existe disco
         printf("No existe el diso \n");
@@ -66,14 +331,15 @@ void crearParticion(char _size[],char _unit,char _path[],char _type,char _fit,ch
 
 void analisisfdisk(char comando[]){
     int contador=0;
-    char valor_size[20]="";
-    char valor_unit;
-    char valor_path[100]="";
-    char valor_type;
-    char valor_fit;
-    char valor_delete[20]="";
-    char valor_name[20]="";
-    char valor_add[20]="";
+    char valor_size[20]="";//obligatorio
+    char valor_unit='k';//opcional
+    char valor_path[100]=""; //obligatorio
+    char nuevo_path[100]="";
+    char valor_type='p'; //opcinal
+    char valor_fit='w';//opcional
+    char valor_delete[20]="";// obligatorio si se quiere eliminar
+    char valor_name[16]=""; //obligatorio
+    char valor_add[20]="";//obligatirio si se quiere + o -
 
     bool flag_size=false;
     bool flag_unit=false;
@@ -83,6 +349,9 @@ void analisisfdisk(char comando[]){
     bool flag_delete=false;
     bool flag_name=false;
     bool flag_add = false;
+
+    int tamano_bytes=0;
+    int tamano_inicio=0;
 
     //comandos de entrada
     while(comando[contador]!=NULL){
@@ -122,6 +391,7 @@ void analisisfdisk(char comando[]){
                     contador++;
                 }
             }
+
             printf("Valor: %s\n",valor_size);
 
         }else if(strcmp(linecomandos,"-unit=")==0){
@@ -238,6 +508,53 @@ void analisisfdisk(char comando[]){
         }
     }
 
+    //ediacio path
+    int c_diagonal=0;
+    int c_i=0;
+    while(valor_path[c_i]!=NULL){
+        if(valor_path[c_i]=='/'){
+            c_diagonal++;
+        }
+
+        if(c_diagonal==2){
+            char aux[1]="";
+            aux[0] = '/';
+            strncat(nuevo_path,aux,1);
+            aux[0] = 'm';
+            strncat(nuevo_path,aux,1);
+            aux[0] = 'a';
+            strncat(nuevo_path,aux,1);
+            aux[0] = 'g';
+            strncat(nuevo_path,aux,1);
+            aux[0] = 'd';
+            strncat(nuevo_path,aux,1);
+            aux[0] = 'i';
+            strncat(nuevo_path,aux,1);
+            aux[0] = 'e';
+            strncat(nuevo_path,aux,1);
+            aux[0] = 'l';
+            strncat(nuevo_path,aux,1);
+            aux[0] = '/';
+            strncat(nuevo_path,aux,1);
+            c_diagonal++;
+            c_i++;
+        }else{
+            char aux[1]="";
+            aux[0] = valor_path[c_i];
+            strncat(nuevo_path,aux,1);
+            c_i++;
+        }
+    }
+    //conversion de char a enteros para ser usados mas adelante
+    if(valor_unit=='b'){
+        tamano_bytes = charToInt(valor_size);
+    }else if(valor_unit=='k'){
+        tamano_bytes = 1024*charToInt(valor_size);
+    }else if(valor_unit=='m'){
+        tamano_bytes = 1024*1024*charToInt(valor_size);
+    }
+
+
     //validacion de entrada
     if(flag_delete==true){ // es para eliminar un particion
         printf("Eliminar particion \n");
@@ -245,7 +562,10 @@ void analisisfdisk(char comando[]){
         printf("Reducir o aumentar particion \n");
     }else{//crear particion
         printf("Crear particion \n");
+        for (int i = 0; i <1 ; ++i) {
 
+        }
+        crearParticion(tamano_bytes,valor_unit,nuevo_path,valor_type,valor_fit,valor_name);
     }
 }
 
