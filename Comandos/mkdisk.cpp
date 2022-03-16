@@ -108,11 +108,12 @@ void creacionDisco(bool band_size,bool band_fit,bool band_unit,bool band_path,ch
         file = fopen(val_path,"w+b");// se pasa la ruta para crear el disco
         fseek(file,0,SEEK_SET);// se posiciona en el inicio del disco
         fwrite(mbr,sizeof(MBR),1,file);//se escribe el mbr el incio del disco
-        for (int i = start; i < tamano_disco_bytes; ++i) {// se llena el disco con 0
+        fseek(file,start+1,SEEK_SET);
+        for (int i = start+1; i < tamano_disco_bytes; ++i) {// se llena el disco con 0
             fwrite("0",1,1,file);
         }
         fclose(file);// se cierra el file
-        printf("Disco creado correctamento en %s\n",val_path);
+        printf("Disco creado correctamente en %s\n",val_path);
     }
 
 }

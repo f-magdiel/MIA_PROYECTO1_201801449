@@ -7,11 +7,11 @@
 using namespace std;
 
 typedef struct  EBR{
-    char part_status;
-    char part_fit;
-    int part_start;
-    int part_size;
-    int part_next;
+    char part_status='0';
+    char part_fit='-';
+    int part_start=0;
+    int part_size=0;
+    int part_next=-1;//no hay siguiente al principio
     char part_name[16];
 }EBR;
 

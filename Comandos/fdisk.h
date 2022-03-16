@@ -8,5 +8,7 @@ int contadorPrimaria(MBR* mbr);
 int contadorExt(MBR* mbr);
 bool validacionNombre(MBR* mbr,char []);
 bool validacionExtendida(MBR* mbr);
+bool validacionNombreLogica(EBR* ebr);
+void imprimirValoresDisco(char []);
 int charToInt(char []);
 #endif //MIA_PROYECTO1_201801449_FDISK_H
