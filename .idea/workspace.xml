@@ -74,6 +74,11 @@
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RunManager">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="MIA_PROYECTO1_201801449" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="MIA_PROYECTO1_201801449" TARGET_NAME="MIA_PROYECTO1_201801449" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="MIA_PROYECTO1_201801449" RUN_TARGET_NAME="MIA_PROYECTO1_201801449">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -101,22 +106,12 @@
       <workItem from="1647117487559" duration="21619000" />
       <workItem from="1647219304587" duration="599000" />
       <workItem from="1647276476369" duration="30535000" />
-      <workItem from="1647358502245" duration="33577000" />
+      <workItem from="1647358502245" duration="33765000" />
+      <workItem from="1647536577926" duration="9411000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Comandos/fdisk.cpp</url>
-          <line>444</line>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
