@@ -8,6 +8,7 @@
 using namespace std;
 char linecomandos[100]="";
 
+
 bool validacionNombreLogica(MBR* mbr,EBR* ebr,FILE* file, char name[]){
     bool flag_name = false;
     int next=0;
@@ -50,6 +51,7 @@ int contadorEBR(MBR* mbr,EBR* ebr,FILE*file){
             contaebr++;
         }
         contaebr++;
+
         return contaebr;
     }else if(mbr->mbr_particion_2.part_type=='e'){
 
@@ -457,13 +459,16 @@ void imprimirValoresDisco(char path[]) {
                 }
             } else if (_type == 'l') {
                 printf("Iniciando particion Logica...\n");
-                
+
                 EBR *ebr = (EBR *) malloc(sizeof(EBR));// se crea un struct para poder leer el ebr
                 //contar ebr
                 int count_ebr = contadorEBR(mbr,ebr,file);
 
                 printf("EBR Localizados %d\n",count_ebr);
-                //primero ubicar la particion extendida
+
+                if(count_ebr<=24) {
+
+                }
                 if(count_ebr<=24){//maximo numero de ebr es de 24
 
                     bool repeatname = validacionNombreLogica(mbr,ebr,file,_name);//validacion nombre no repitente
@@ -518,15 +523,21 @@ void imprimirValoresDisco(char path[]) {
                                     strcpy(ebr->part_name, _name);
                                     fseek(file, ebr->part_start, SEEK_SET);
                                     fwrite(ebr, sizeof(EBR), 1, file);
+                                    printf("Particion Logica Agregada correctamente\n");
                                 }else{
-                                    ebr->part_start = ant;
-                                    ebr->part_fit = _fit;
-                                    ebr->part_status = '1';
-                                    ebr->part_size = _size;
-                                    ebr->part_next = -1;
-                                    strcpy(ebr->part_name, _name);
-                                    fseek(file, ebr->part_start, SEEK_SET);
-                                    fwrite(ebr, sizeof(EBR), 1, file);
+                                    if(count_ebr==24 && ebr->part_status=='0'){
+                                        ebr->part_start = ant;
+                                        ebr->part_fit = _fit;
+                                        ebr->part_status = '1';
+                                        ebr->part_size = _size;
+                                        ebr->part_next = -1;
+                                        strcpy(ebr->part_name, _name);
+                                        fseek(file, ebr->part_start, SEEK_SET);
+                                        fwrite(ebr, sizeof(EBR), 1, file);
+                                        printf("Particion Logica Agregada correctamente\n");
+                                    }else{
+                                        printf("Error -> Particiones logicas llego al maximo\n");
+                                    }
                                 }
 
                                 if(count_ebr<=23){
@@ -542,15 +553,252 @@ void imprimirValoresDisco(char path[]) {
                                 }
 
                                 fclose(file);
-                                printf("Particion Logica Agregada correctamente\n");
+
                             }
 
                         } else if (mbr->mbr_particion_2.part_type == 'e') {
+                            fseek(file, mbr->mbr_particion_2.part_start+sizeof(EBR)+1 ,SEEK_SET);// me posiciono
+                            fread(ebr, sizeof(EBR), 1, file);
 
+                            if (ebr->part_next == -1) {// es primero
+                                //toma datos
+                                ebr->part_start=mbr->mbr_particion_2.part_start+sizeof (EBR)+1;
+                                ebr->part_size=_size;
+                                ebr->part_fit=_fit;
+                                ebr->part_status='1';
+                                ebr->part_next=ebr->part_start+ebr->part_size+1;//no tiene sig como es primero
+                                strcpy(ebr->part_name,_name);
+                                //obtengo la posiicon donde empieza mbr y se sume el tamano y 1 para ir a la sig posicion disponible
+                                fseek(file, ebr->part_start, SEEK_SET);// me ubico
+                                fwrite(ebr, sizeof(EBR), 1, file);// escribo
+                                //nuevo erb
+                                fseek(file,ebr->part_next,SEEK_SET);
+                                EBR *ebrnew = (EBR *) malloc(sizeof(EBR));// se crea un struct para poder crear ebr mas
+                                ebrnew->part_next=-1;
+                                ebrnew->part_start=0;
+                                ebrnew->part_size=0;
+                                ebrnew->part_status='-';
+                                ebrnew->part_fit='-';
+                                memset(ebr->part_name,1,16);
+                                fwrite(ebrnew,sizeof (EBR),1,file);
+                                fclose(file);//ciero
+                                printf("Particion logica agregada \n");
+                            } else {// se crea una mas para armando la lista
+                                int pos = ebr->part_next;
+                                int ant = 0;
+                                //fseek(file,pos,SEEK_SET);
+                                //fread(ebr,sizeof(EBR),1,file);
+                                while (pos != -1) {//reviso si tiene siguiente
+                                    ant = pos;
+                                    fseek(file, pos, SEEK_SET);// se posiciona en donde debe estar el ebr
+                                    fread(ebr, sizeof(EBR), 1, file);// leo el ebr
+                                    pos = ebr->part_next;//sus siguientes
+                                    // si me devuleve un no hay nada, termina el while
+                                }
+                                //se sale cuando encuentra -1, porque ya no hay siguiente
+                                if(count_ebr<=23){
+                                    ebr->part_start = ant;
+                                    ebr->part_fit = _fit;
+                                    ebr->part_status = '1';
+                                    ebr->part_size = _size;
+                                    ebr->part_next = ebr->part_size + ebr->part_start + 1;
+                                    strcpy(ebr->part_name, _name);
+                                    fseek(file, ebr->part_start, SEEK_SET);
+                                    fwrite(ebr, sizeof(EBR), 1, file);
+                                    printf("Particion Logica Agregada correctamente\n");
+                                }else{
+                                    if(count_ebr==24 && ebr->part_status=='0'){
+                                        ebr->part_start = ant;
+                                        ebr->part_fit = _fit;
+                                        ebr->part_status = '1';
+                                        ebr->part_size = _size;
+                                        ebr->part_next = -1;
+                                        strcpy(ebr->part_name, _name);
+                                        fseek(file, ebr->part_start, SEEK_SET);
+                                        fwrite(ebr, sizeof(EBR), 1, file);
+                                        printf("Particion Logica Agregada correctamente\n");
+                                    }else{
+                                        printf("Error -> Particiones logicas llego al maximo\n");
+                                    }
+                                }
+
+                                if(count_ebr<=23){
+                                    EBR *ebrnew = (EBR *) malloc(sizeof(EBR));// se crea un struct para poder crear ebr mas
+                                    ebrnew->part_next=-1;
+                                    ebrnew->part_start=0;
+                                    ebrnew->part_size=0;
+                                    ebrnew->part_status='0';
+                                    ebrnew->part_fit='-';
+                                    memset(ebrnew->part_name,1,16);
+                                    fseek(file, ebr->part_next, SEEK_SET);//me posiciono
+                                    fwrite(ebrnew, sizeof(EBR), 1, file);// escribo el ebr y finaliza
+                                }
+
+                                fclose(file);
+
+                            }
                         } else if (mbr->mbr_particion_3.part_type == 'e') {
+                            fseek(file, mbr->mbr_particion_3.part_start+sizeof(EBR)+1 ,SEEK_SET);// me posiciono
+                            fread(ebr, sizeof(EBR), 1, file);
 
+                            if (ebr->part_next == -1) {// es primero
+                                //toma datos
+                                ebr->part_start=mbr->mbr_particion_3.part_start+sizeof (EBR)+1;
+                                ebr->part_size=_size;
+                                ebr->part_fit=_fit;
+                                ebr->part_status='1';
+                                ebr->part_next=ebr->part_start+ebr->part_size+1;//no tiene sig como es primero
+                                strcpy(ebr->part_name,_name);
+                                //obtengo la posiicon donde empieza mbr y se sume el tamano y 1 para ir a la sig posicion disponible
+                                fseek(file, ebr->part_start, SEEK_SET);// me ubico
+                                fwrite(ebr, sizeof(EBR), 1, file);// escribo
+                                //nuevo erb
+                                fseek(file,ebr->part_next,SEEK_SET);
+                                EBR *ebrnew = (EBR *) malloc(sizeof(EBR));// se crea un struct para poder crear ebr mas
+                                ebrnew->part_next=-1;
+                                ebrnew->part_start=0;
+                                ebrnew->part_size=0;
+                                ebrnew->part_status='-';
+                                ebrnew->part_fit='-';
+                                memset(ebr->part_name,1,16);
+                                fwrite(ebrnew,sizeof (EBR),1,file);
+                                fclose(file);//ciero
+                                printf("Particion logica agregada \n");
+                            } else {// se crea una mas para armando la lista
+                                int pos = ebr->part_next;
+                                int ant = 0;
+                                //fseek(file,pos,SEEK_SET);
+                                //fread(ebr,sizeof(EBR),1,file);
+                                while (pos != -1) {//reviso si tiene siguiente
+                                    ant = pos;
+                                    fseek(file, pos, SEEK_SET);// se posiciona en donde debe estar el ebr
+                                    fread(ebr, sizeof(EBR), 1, file);// leo el ebr
+                                    pos = ebr->part_next;//sus siguientes
+                                    // si me devuleve un no hay nada, termina el while
+                                }
+                                //se sale cuando encuentra -1, porque ya no hay siguiente
+                                if(count_ebr<=23){
+                                    ebr->part_start = ant;
+                                    ebr->part_fit = _fit;
+                                    ebr->part_status = '1';
+                                    ebr->part_size = _size;
+                                    ebr->part_next = ebr->part_size + ebr->part_start + 1;
+                                    strcpy(ebr->part_name, _name);
+                                    fseek(file, ebr->part_start, SEEK_SET);
+                                    fwrite(ebr, sizeof(EBR), 1, file);
+                                    printf("Particion Logica Agregada correctamente\n");
+                                }else{
+                                    if(count_ebr==24 && ebr->part_status=='0'){
+                                        ebr->part_start = ant;
+                                        ebr->part_fit = _fit;
+                                        ebr->part_status = '1';
+                                        ebr->part_size = _size;
+                                        ebr->part_next = -1;
+                                        strcpy(ebr->part_name, _name);
+                                        fseek(file, ebr->part_start, SEEK_SET);
+                                        fwrite(ebr, sizeof(EBR), 1, file);
+                                        printf("Particion Logica Agregada correctamente\n");
+                                    }else{
+                                        printf("Error -> Particiones logicas llego al maximo\n");
+                                    }
+                                }
+
+                                if(count_ebr<=23){
+                                    EBR *ebrnew = (EBR *) malloc(sizeof(EBR));// se crea un struct para poder crear ebr mas
+                                    ebrnew->part_next=-1;
+                                    ebrnew->part_start=0;
+                                    ebrnew->part_size=0;
+                                    ebrnew->part_status='0';
+                                    ebrnew->part_fit='-';
+                                    memset(ebrnew->part_name,1,16);
+                                    fseek(file, ebr->part_next, SEEK_SET);//me posiciono
+                                    fwrite(ebrnew, sizeof(EBR), 1, file);// escribo el ebr y finaliza
+                                }
+
+                                fclose(file);
+
+                            }
                         } else if (mbr->mbr_particion_4.part_type == 'e') {
+                            fseek(file, mbr->mbr_particion_4.part_start+sizeof(EBR)+1 ,SEEK_SET);// me posiciono
+                            fread(ebr, sizeof(EBR), 1, file);
 
+                            if (ebr->part_next == -1) {// es primero
+                                //toma datos
+                                ebr->part_start=mbr->mbr_particion_4.part_start+sizeof (EBR)+1;
+                                ebr->part_size=_size;
+                                ebr->part_fit=_fit;
+                                ebr->part_status='1';
+                                ebr->part_next=ebr->part_start+ebr->part_size+1;//no tiene sig como es primero
+                                strcpy(ebr->part_name,_name);
+                                //obtengo la posiicon donde empieza mbr y se sume el tamano y 1 para ir a la sig posicion disponible
+                                fseek(file, ebr->part_start, SEEK_SET);// me ubico
+                                fwrite(ebr, sizeof(EBR), 1, file);// escribo
+                                //nuevo erb
+                                fseek(file,ebr->part_next,SEEK_SET);
+                                EBR *ebrnew = (EBR *) malloc(sizeof(EBR));// se crea un struct para poder crear ebr mas
+                                ebrnew->part_next=-1;
+                                ebrnew->part_start=0;
+                                ebrnew->part_size=0;
+                                ebrnew->part_status='-';
+                                ebrnew->part_fit='-';
+                                memset(ebr->part_name,1,16);
+                                fwrite(ebrnew,sizeof (EBR),1,file);
+                                fclose(file);//ciero
+                                printf("Particion logica agregada \n");
+                            } else {// se crea una mas para armando la lista
+                                int pos = ebr->part_next;
+                                int ant = 0;
+                                //fseek(file,pos,SEEK_SET);
+                                //fread(ebr,sizeof(EBR),1,file);
+                                while (pos != -1) {//reviso si tiene siguiente
+                                    ant = pos;
+                                    fseek(file, pos, SEEK_SET);// se posiciona en donde debe estar el ebr
+                                    fread(ebr, sizeof(EBR), 1, file);// leo el ebr
+                                    pos = ebr->part_next;//sus siguientes
+                                    // si me devuleve un no hay nada, termina el while
+                                }
+                                //se sale cuando encuentra -1, porque ya no hay siguiente
+                                if(count_ebr<=23){
+                                    ebr->part_start = ant;
+                                    ebr->part_fit = _fit;
+                                    ebr->part_status = '1';
+                                    ebr->part_size = _size;
+                                    ebr->part_next = ebr->part_size + ebr->part_start + 1;
+                                    strcpy(ebr->part_name, _name);
+                                    fseek(file, ebr->part_start, SEEK_SET);
+                                    fwrite(ebr, sizeof(EBR), 1, file);
+                                    printf("Particion Logica Agregada correctamente\n");
+                                }else{
+                                    if(count_ebr==24 && ebr->part_status=='0'){
+                                        ebr->part_start = ant;
+                                        ebr->part_fit = _fit;
+                                        ebr->part_status = '1';
+                                        ebr->part_size = _size;
+                                        ebr->part_next = -1;
+                                        strcpy(ebr->part_name, _name);
+                                        fseek(file, ebr->part_start, SEEK_SET);
+                                        fwrite(ebr, sizeof(EBR), 1, file);
+                                        printf("Particion Logica Agregada correctamente\n");
+                                    }else{
+                                        printf("Error -> Particiones logicas llego al maximo\n");
+                                    }
+                                }
+
+                                if(count_ebr<=23){
+                                    EBR *ebrnew = (EBR *) malloc(sizeof(EBR));// se crea un struct para poder crear ebr mas
+                                    ebrnew->part_next=-1;
+                                    ebrnew->part_start=0;
+                                    ebrnew->part_size=0;
+                                    ebrnew->part_status='0';
+                                    ebrnew->part_fit='-';
+                                    memset(ebrnew->part_name,1,16);
+                                    fseek(file, ebr->part_next, SEEK_SET);//me posiciono
+                                    fwrite(ebrnew, sizeof(EBR), 1, file);// escribo el ebr y finaliza
+                                }
+
+                                fclose(file);
+
+                            }
                         }
 
                     }else{// se repite nombre
@@ -569,7 +817,7 @@ void imprimirValoresDisco(char path[]) {
         } else {//no existe disco
             printf("No existe el diso \n");
         }
-    imprimirValoresDisco(_path);
+
     }
 
 
