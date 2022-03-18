@@ -13,5 +13,7 @@ bool validacionExtendida(MBR* mbr);
 bool validacionNombreLogica(MBR* mbr,EBR* ebr,FILE* file,char[]);
 void imprimirValoresDisco(char []);
 int contadorEBR(MBR* mbr,EBR* ebr,FILE* file);
-int charToInt(char []);
+int charToInt(char[]);
+//              add, unit, path, name
+void add_fdisk(char[],char,char[],char[]);
 #endif //MIA_PROYECTO1_201801449_FDISK_H

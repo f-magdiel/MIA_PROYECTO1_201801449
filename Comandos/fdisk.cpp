@@ -8,6 +8,117 @@
 using namespace std;
 char linecomandos[100]="";
 
+int charToInt(char size[]) {
+    int conta = 0;
+    string num = "";
+    int numero;
+    while (size[conta] != NULL) {
+        num += size[conta];
+        conta++;
+    }
+    numero = stoi(num);
+    return numero;
+}
+
+void add_fdisk(char _add[],char _unit,char _path[],char _name[]){
+    //arreglos
+    MBR aux;
+    EBR p1 [24];
+    EBR p2 [24];
+    EBR p3 [24];
+    EBR p4 [24];
+
+    //busco la particion
+    FILE* file;
+    MBR *mbr = (MBR *) malloc(sizeof(MBR));// se crea un struct para poder leer el mbr
+    EBR *ebr = (EBR*) malloc(sizeof (EBR));// se crea un struct para poder leer el ebr
+    file = fopen(_path, "rb+");// se lee el archivo y se actualiza
+    fseek(file, 0, SEEK_SET);
+    fread(mbr, sizeof(MBR), 1, file); // se obtien el mbr
+
+    //valido si existe el disco
+    bool flagFile = validacionFile(_path);
+    if(flagFile==true){// si existe
+        printf("El disco existe se procede con el Add\n");
+        //si existe el nombre del disco
+        if(strcmp(mbr->mbr_particion_1.part_name,_name)==0){
+            printf("El nombre de la particion existe\n");
+            if(mbr->mbr_particion_1.part_type=='p'){// tipo de particion primaria
+                int espacioTotal = mbr->mbr_tamano; //tamaño del disco
+                int espacioOcupado = mbr->mbr_particion_1.part_start+mbr->mbr_particion_1.part_size;
+                int espacioDisponible = espacioTotal -espacioOcupado;
+                int solicitado = charToInt(_add);
+
+                //si es -add o +add
+                if(solicitado>0){// es positivo
+                    if(solicitado<espacioDisponible){
+                        //copia
+                        fseek(file,0,SEEK_SET);
+
+                        //se elimina
+
+                        //se reescribe
+                    }else{
+                        printf("Error -> Espacio no disponible para +ADD\n");
+                    }
+
+                }else{// es negativo
+                    int soli = espacioDisponible - solicitado;
+                    if(soli>0){
+                        // se elimina
+
+                        // se reescribe
+                    }else{
+                        printf("Error -> Espacio no disponible para -ADD\n");
+                    }
+                }
+
+            }else if(mbr->mbr_particion_1.part_type=='e'){ //tipo de particion extendida
+                //valido el unit
+                if(_unit=='b'){
+                    int data = charToInt(_add);
+                    // si hay espacio
+                }else if(_unit=='k'){
+                    int data = charToInt(_add)*1024;
+                    // si hay espacio
+                    int espacioTotal = mbr->mbr_particion_1.part_size;
+                    int espacioOcupado=0;
+                    int espacioDisponible=0;
+                    fseek(file,mbr->mbr_particion_1.part_start+sizeof(EBR)+1,SEEK_SET);
+                    fread(ebr,sizeof (EBR),1,file);
+                    int pos = ebr->part_next;
+                    while(pos!=-1){
+                        fseek(file, pos, SEEK_SET);// se posiciona en donde debe estar el ebr
+                        fread(ebr, sizeof(EBR), 1, file);// leo el ebr
+                        pos = ebr->part_next;//sus siguientes
+                        espacioOcupado+=ebr->part_size;
+                    }
+                    espacioOcupado+=ebr->part_size;
+
+                }else if(_unit=='m'){
+                    int data = charToInt(_add)*1024*1024;
+                    // si hay espacio
+                }else{
+                    printf("Error -> valor unit no reconocido\n");
+                }
+            }
+        }else if(strcmp(mbr->mbr_particion_2.part_name,_name)==0){
+            printf("El nombre de la particion existe\n");
+        }else if(strcmp(mbr->mbr_particion_3.part_name,_name)==0){
+            printf("El nombre de la particion existe\n");
+        }else if(strcmp(mbr->mbr_particion_4.part_name,_name)==0){
+            printf("El nombre de la particion existe\n");
+        }else{// el nombre del disco no existe
+            printf("Error -> El nombre de la particion no existe\n");
+        }
+    }else{// no existe el disco
+        printf("Error -> El disco no existe\n");
+    }
+
+
+
+    // acciono si es posible o no
+}
 
 bool validacionNombreLogica(MBR* mbr,EBR* ebr,FILE* file, char name[]){
     bool flag_name = false;
@@ -160,17 +271,7 @@ void imprimirValoresDisco(char path[]) {
 
     }
 
-    int charToInt(char size[]) {
-        int conta = 0;
-        string num = "";
-        int numero;
-        while (size[conta] != NULL) {
-            num += size[conta];
-            conta++;
-        }
-        numero = stoi(num);
-        return numero;
-    }
+
 
 //metodo para crear particiones->solo para crear
     void crearParticion(int _size, char _unit, char _path[], char _type, char _fit, char _name[]) {
@@ -841,7 +942,7 @@ void imprimirValoresDisco(char path[]) {
         bool flag_delete = false;
         bool flag_name = false;
         bool flag_add = false;
-
+        bool flag_creation = true;// funciona con validacion de parametros
         int tamano_bytes = 0;
         int tamano_inicio = 0;
 
@@ -1044,7 +1145,27 @@ void imprimirValoresDisco(char path[]) {
             tamano_bytes = 1024 * charToInt(valor_size);
         } else if (valor_unit == 'm') {
             tamano_bytes = 1024 * 1024 * charToInt(valor_size);
+        }else{
+            printf("Error -> Valor de unit no reconocido\n");
+            flag_creation = false;
         }
+
+        //validcion de type
+        if(valor_type=='p' || valor_type=='e'||valor_type=='l'){
+            flag_creation = true;
+        }else{
+            printf("Error -> Valor de type no reconocido\n");
+            flag_creation = false;
+        }
+
+        //validacion de fit
+        if(valor_fit=='b' || valor_fit=='f' || valor_fit=='w'){
+            flag_creation=true;
+        }else{
+            printf("Error -> Valor de fit no reconocido\n");
+            flag_creation = false;
+        }
+
 
 
         //validacion de entrada
@@ -1053,8 +1174,12 @@ void imprimirValoresDisco(char path[]) {
         } else if (flag_add == true) {// es para reducir o aumentar un particion
             printf("Reducir o aumentar particion \n");
         } else {//crear particion
-            printf("Crear particion \n");
-            crearParticion(tamano_bytes, valor_unit, nuevo_path, valor_type, valor_fit, valor_name);
+            if(flag_creation==true){
+                printf("Crear particion \n");
+                crearParticion(tamano_bytes, valor_unit, nuevo_path, valor_type, valor_fit, valor_name);
+            }else{
+                printf("No es posible crear la particion\n");
+            }
         }
     }
 
