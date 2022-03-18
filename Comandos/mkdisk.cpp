@@ -51,6 +51,9 @@ void creacionDisco(bool band_size,bool band_fit,bool band_unit,bool band_path,ch
             mbr->dsk_fit = val_fit;// si es first fit
         }else if(val_fit=='w'){
             mbr->dsk_fit = val_fit;//si es worst fit
+        }else{
+            printf("Error -> Valor de fit no reconocido\n");
+            band_path=false;
         }
 
     }else{
@@ -61,9 +64,13 @@ void creacionDisco(bool band_size,bool band_fit,bool band_unit,bool band_path,ch
         if(val_unit=='k'){
             tamano_disco_bytes= size_disk*1024;//si es kilobytes
 
-        }else{
+        }else if(val_unit=='m'){
             tamano_disco_bytes = size_disk*1024*1024;//si es megabytes
+        }else{
+            printf("Error -> Valor de unit no reconocido\n");
+            band_path = false;
         }
+
     }else{
         tamano_disco_bytes = size_disk*1024*1024;//si no viene pero se crea en megabytes
     }
@@ -114,6 +121,8 @@ void creacionDisco(bool band_size,bool band_fit,bool band_unit,bool band_path,ch
         }
         fclose(file);// se cierra el file
         printf("Disco creado correctamente en %s\n",val_path);
+    }else{
+        printf("Error-> No es posible crear el disco\n");
     }
 
 }
