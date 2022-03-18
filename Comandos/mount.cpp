@@ -10,6 +10,7 @@
 using namespace std;
 DISCO discos[99];
 char lineacom[100]="";
+char lineun[100]="";
 int contaDisk=0;
 int abd=0;
 char abdecedario[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
@@ -216,14 +217,14 @@ void montaje(char _name[],char _path[]){
                     strcpy(discos[iterador].particion[0].id,_id);
                 }else{// no sea ha ingresado nada
                     discos[contaDisk].particion[0].status = mbr->mbr_particion_1.part_status;// status para particion
-                    discos[contaDisk].num = contaDisk;//numero para disco
+                    discos[contaDisk].num = contaDisk+1;//numero para disco
                     strcpy(discos[contaDisk].path,_path);
                     strcpy(discos[contaDisk].particion[0].name,_name);
                     //gerando id
                     char _id[10]="";
 
                     stringstream  temp;
-                    temp<<contaDisk;
+                    temp<<contaDisk+1;
                     char const *numero = temp.str().c_str();
                     char letra [1]="";
                     letra[0]= abdecedario[0];
@@ -278,14 +279,14 @@ void montaje(char _name[],char _path[]){
                     strcpy(discos[iterador].particion[1].id,_id);
                 }else{// no sea ha ingresado nada
                     discos[contaDisk].particion[1].status = mbr->mbr_particion_2.part_status;// status para particion
-                    discos[contaDisk].num = contaDisk;//numero para disco
+                    discos[contaDisk].num = contaDisk+1;//numero para disco
                     strcpy(discos[contaDisk].path,_path);
                     strcpy(discos[contaDisk].particion[1].name,_name);
                     //gerando id
                     char _id[10]="";
 
                     stringstream  temp;
-                    temp<<contaDisk;
+                    temp<<contaDisk+1;
                     char const *numero = temp.str().c_str();
                     char letra [1]="";
                     letra[0]= abdecedario[1];
@@ -340,14 +341,14 @@ void montaje(char _name[],char _path[]){
                     strcpy(discos[iterador].particion[2].id,_id);
                 }else{// no sea ha ingresado nada
                     discos[contaDisk].particion[2].status = mbr->mbr_particion_3.part_status;// status para particion
-                    discos[contaDisk].num = contaDisk;//numero para disco
+                    discos[contaDisk].num = contaDisk+1;//numero para disco
                     strcpy(discos[contaDisk].path,_path);
                     strcpy(discos[contaDisk].particion[2].name,_name);
                     //gerando id
                     char _id[10]="";
 
                     stringstream  temp;
-                    temp<<contaDisk;
+                    temp<<contaDisk+1;
                     char const *numero = temp.str().c_str();
                     char letra [1]="";
                     letra[0]= abdecedario[2];
@@ -402,14 +403,14 @@ void montaje(char _name[],char _path[]){
                     strcpy(discos[iterador].particion[3].id,_id);
                 }else{// no sea ha ingresado nada
                     discos[contaDisk].particion[3].status = mbr->mbr_particion_4.part_status;// status para particion
-                    discos[contaDisk].num = contaDisk;//numero para disco
+                    discos[contaDisk].num = contaDisk+1;//numero para disco
                     strcpy(discos[contaDisk].path,_path);
                     strcpy(discos[contaDisk].particion[3].name,_name);
                     //gerando id
                     char _id[10]="";
 
                     stringstream  temp;
-                    temp<<contaDisk;
+                    temp<<contaDisk+1;
                     char const *numero = temp.str().c_str();
                     char letra [1]="";
                     letra[0]= abdecedario[3];
@@ -444,13 +445,97 @@ void listarMontajes(){
     int it=0;
     printf("-------------------MONTAJES------------------------\n");
     printf("PATH-------------------------------NOMBRE------------ID---------ESTADO\n");
-    while(discos[it].num!=-1){
+    /*while(discos[it].num!=-1){
         int jt=0;
         while(discos[it].particion[jt].status!= '\000'){
             printf("%s        %s       %s       %c\n",discos[it].path,discos[it].particion[jt].name,discos[it].particion[jt].id,discos[it].particion[jt].status);
             jt++;
         }
         it++;
+    }*/
+    for (int i = 0; i < 99; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            if(discos[i].particion[j].status!='\000'){
+                printf("%s        %s       %s       %c\n",discos[i].path,discos[i].particion[j].name,discos[i].particion[j].id,discos[i].particion[j].status);
+            }
+        }
     }
 
+}
+
+void desmontaje(char _id[]){
+    printf("A desmontar %s\n",_id);
+    int ic=0;
+    while(discos[ic].num!=-1){
+        int jc=0;
+        while(discos[ic].particion[jc].status!='\000'){
+            if(strcmp(discos[ic].particion[jc].id,_id)==0){
+                printf("Se supone %s\n",discos[ic].particion[jc].id);
+                memset(discos[ic].particion[jc].id,0,10);
+                memset(discos[ic].particion[jc].name,0,16);
+                discos[ic].particion[jc].status = '\000';
+                break;
+            }
+            jc++;
+        }
+        ic++;
+    }
+}
+
+void analisisunmount(char comando[]){
+    int contador=0;
+    char valor_id[10]="";
+
+    bool flag_un=false;
+    bool flag_id =false;
+
+    while(comando[contador]!=NULL){
+        if (comando[contador] == ' ') {
+            contador++;
+            memset(lineun, 0, 100);
+        } else if (comando[contador] == '=') {
+            char aux[1] = "";
+            aux[0] = tolower(comando[contador]);
+            strncat(lineun, aux, 1);
+            contador++;
+        } else {
+            char aux[1] = "";
+            aux[0] = tolower(comando[contador]);
+            strncat(lineun, aux, 1);
+            contador++;
+        }
+
+        //validacion comandos
+        if(strcmp(lineun,"unmount")==0){
+            printf("Encontro : %s\n", lineun);
+            flag_un = true;
+            memset(lineun, 0, 100);
+            contador++;
+        }else if(strcmp(lineun,"-id=")==0){
+            printf("Encontro: %s\n", lineun);
+            flag_id = true;
+            memset(lineun, 0, 100);
+            //para el valor de name
+            while (comando[contador] != NULL) {
+                if (comando[contador] == ' ' || comando[contador] == '\n') {
+                    contador++;
+                    break;
+                } else {
+                    char aux[1] = "";
+                    aux[0] = comando[contador];
+                    strncat(valor_id, aux, 1);
+                    contador++;
+                }
+            }
+
+            printf("Valor: %s\n", valor_id);
+        }
+    }
+
+    //validaciones para unmount
+    if(flag_id==true && flag_un==true){
+        desmontaje(valor_id);
+    }else{
+        printf("Error -> Parametros no reconocidos\n");
+    }
 }

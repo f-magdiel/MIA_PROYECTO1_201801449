@@ -64,6 +64,10 @@ void analizarComando(char comando[]){
             analisismount(comando);
             listarMontajes();
             memset(lineacomandos,0,100);
+        }else if(strcmp(lineacomandos,"unmount")==0){
+            analisisunmount(comando);
+            listarMontajes();
+            memset(lineacomandos,0,100);
         }
     }
 

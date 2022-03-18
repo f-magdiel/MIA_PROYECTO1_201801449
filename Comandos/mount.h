@@ -19,5 +19,7 @@ void analisismount(char []);
 void montaje(char[],char[]);
 bool validacionDisco(char []);
 void listarMontajes();
+void analisisunmount(char[]);
+void desmontaje(char[]);
 
 #endif //MIA_PROYECTO1_201801449_MOUNT_H
