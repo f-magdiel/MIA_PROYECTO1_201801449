@@ -5,6 +5,7 @@
 #include "../Comandos/rmdisk.h"
 #include "../Comandos/fdisk.h"
 #include "../Comandos/mount.h"
+#include "../Comandos/rep.h"
 
 #include <string>
 #include <fstream>
@@ -67,6 +68,9 @@ void analizarComando(char comando[]){
         }else if(strcmp(lineacomandos,"unmount")==0){
             analisisunmount(comando);
             listarMontajes();
+            memset(lineacomandos,0,100);
+        }else if(strcmp(lineacomandos,"rep")==0){
+            analisisreporte(comando);
             memset(lineacomandos,0,100);
         }
     }

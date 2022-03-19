@@ -7,6 +7,131 @@
 #include "../Comandos/mkdisk.h"
 using namespace std;
 char linecomandos[100]="";
+char lincom[100]="";
+
+
+void delete_fdisk(char _name[],char _path[],char _delete[]){
+
+    if(strcmp(_delete,"fast")==0){
+        printf("Delete fast se procede\n");
+        FILE *file;
+        file = fopen(_path,"rb+");
+        MBR* mbr = (MBR*) malloc(sizeof (MBR));
+        EBR* ebr = (EBR*) malloc(sizeof (EBR));
+        fseek(file,0,SEEK_SET);
+        fread(mbr,sizeof(MBR),1,file);
+
+        if(strcmp(mbr->mbr_particion_1.part_name,_name)==0){
+            int init = mbr->mbr_particion_1.part_start;
+            mbr->mbr_particion_1.part_size=0;
+            mbr->mbr_particion_1.part_type='-';
+            mbr->mbr_particion_1.part_start=0;
+            mbr->mbr_particion_1.part_status='0';
+            mbr->mbr_particion_1.part_fit='-';
+            memset(mbr->mbr_particion_1.part_name,0,16);
+            fseek(file,init,SEEK_SET);
+            fwrite(&mbr->mbr_particion_1,sizeof (mbr->mbr_particion_1),1,file);
+            fclose(file);
+            printf("Delete fast aplicado P1\n");
+        }else if(strcmp(mbr->mbr_particion_2.part_name,_name)==0){
+            int init = mbr->mbr_particion_2.part_start;
+            mbr->mbr_particion_2.part_size=0;
+            mbr->mbr_particion_2.part_type='-';
+            mbr->mbr_particion_2.part_start=0;
+            mbr->mbr_particion_2.part_status='0';
+            mbr->mbr_particion_2.part_fit='-';
+            memset(mbr->mbr_particion_2.part_name,0,16);
+            fseek(file,init,SEEK_SET);
+            fwrite(&mbr->mbr_particion_2,sizeof (mbr->mbr_particion_2),1,file);
+            fclose(file);
+            printf("Delete fast aplicado P2\n");
+        }else if(strcmp(mbr->mbr_particion_3.part_name,_name)==0){
+            int init = mbr->mbr_particion_3.part_start;
+            mbr->mbr_particion_3.part_size=0;
+            mbr->mbr_particion_3.part_type='-';
+            mbr->mbr_particion_3.part_start=0;
+            mbr->mbr_particion_3.part_status='0';
+            mbr->mbr_particion_3.part_fit='-';
+            memset(mbr->mbr_particion_3.part_name,0,16);
+            fseek(file,init,SEEK_SET);
+            fwrite(&mbr->mbr_particion_3,sizeof (mbr->mbr_particion_3),1,file);
+            fclose(file);
+            printf("Delete fast aplicado P3\n");
+        }else if(strcmp(mbr->mbr_particion_4.part_name,_name)==0){
+            int init = mbr->mbr_particion_4.part_start;
+            mbr->mbr_particion_4.part_size=0;
+            mbr->mbr_particion_4.part_type='-';
+            mbr->mbr_particion_4.part_start=0;
+            mbr->mbr_particion_4.part_status='0';
+            mbr->mbr_particion_4.part_fit='-';
+            memset(mbr->mbr_particion_4.part_name,0,16);
+            fseek(file,init,SEEK_SET);
+            fwrite(&mbr->mbr_particion_4,sizeof (mbr->mbr_particion_4),1,file);
+            fclose(file);
+            printf("Delete fast aplicado P4\n");
+        }
+    }else if(strcmp(_delete,"full")==0){
+        printf("Delete full se procede\n");
+        FILE *file;
+        file = fopen(_path,"rb+");
+        MBR* mbr = (MBR*) malloc(sizeof (MBR));
+        EBR* ebr = (EBR*) malloc(sizeof (EBR));
+        fseek(file,0,SEEK_SET);
+        fread(mbr,sizeof(MBR),1,file);
+
+        if(strcmp(mbr->mbr_particion_1.part_name,_name)==0){
+            int inicio=mbr->mbr_particion_1.part_start;
+            mbr->mbr_particion_1.part_size=0;
+            mbr->mbr_particion_1.part_type='-';
+            mbr->mbr_particion_1.part_start=0;
+            mbr->mbr_particion_1.part_status='0';
+            mbr->mbr_particion_1.part_fit='-';
+            memset(mbr->mbr_particion_1.part_name,0,16);
+            fseek(file,inicio,SEEK_SET);
+            fwrite("\0",sizeof (mbr->mbr_particion_1),1,file);
+            fclose(file);
+            printf("Delete full aplicado P1\n");
+        }else if(strcmp(mbr->mbr_particion_2.part_name,_name)==0){
+            int inicio=mbr->mbr_particion_2.part_start;
+            mbr->mbr_particion_2.part_size=0;
+            mbr->mbr_particion_2.part_type='-';
+            mbr->mbr_particion_2.part_start=0;
+            mbr->mbr_particion_2.part_status='0';
+            mbr->mbr_particion_2.part_fit='-';
+            memset(mbr->mbr_particion_2.part_name,0,16);
+            fseek(file,inicio,SEEK_SET);
+            fwrite("\0",sizeof (mbr->mbr_particion_2),1,file);
+            fclose(file);
+            printf("Delete full aplicado P2\n");
+        }else if(strcmp(mbr->mbr_particion_3.part_name,_name)==0){
+            int inicio=mbr->mbr_particion_3.part_start;
+            mbr->mbr_particion_3.part_size=0;
+            mbr->mbr_particion_3.part_type='-';
+            mbr->mbr_particion_3.part_start=0;
+            mbr->mbr_particion_3.part_status='0';
+            mbr->mbr_particion_3.part_fit='-';
+            memset(mbr->mbr_particion_3.part_name,0,16);
+            fseek(file,inicio,SEEK_SET);
+            fwrite("\0",sizeof (mbr->mbr_particion_3),1,file);
+            fclose(file);
+            printf("Delete full aplicado P3\n");
+        }else if(strcmp(mbr->mbr_particion_4.part_name,_name)==0){
+            int inicio=mbr->mbr_particion_4.part_start;
+            mbr->mbr_particion_4.part_size=0;
+            mbr->mbr_particion_4.part_type='-';
+            mbr->mbr_particion_4.part_start=0;
+            mbr->mbr_particion_4.part_status='0';
+            mbr->mbr_particion_4.part_fit='-';
+            memset(mbr->mbr_particion_4.part_name,0,16);
+            fseek(file,inicio,SEEK_SET);
+            fwrite("\0",sizeof (mbr->mbr_particion_4),1,file);
+            fclose(file);
+            printf("Delete full aplicado P4\n");
+        }
+    }else {
+        printf("Error -> Parametro de delete no valida\n");
+    }
+}
 
 int charToInt(char size[]) {
     int conta = 0;
@@ -140,11 +265,53 @@ bool validacionNombreLogica(MBR* mbr,EBR* ebr,FILE* file, char name[]){
             flag_name = true;
         }
     }else if(mbr->mbr_particion_2.part_type=='e'){
-
+        fseek(file,mbr->mbr_particion_2.part_start+sizeof (EBR)+1,SEEK_SET);
+        fread(ebr,sizeof (EBR),1,file);
+        next = ebr->part_next;
+        while(next!=-1){
+            if(strcmp(ebr->part_name,name)==0){
+                flag_name = true;
+                break;
+            }
+            fseek(file, next, SEEK_SET);// se posiciona en donde debe estar el ebr
+            fread(ebr, sizeof(EBR), 1, file);// leo el ebr
+            next = ebr->part_next;//obtengo el next, si es -1 se sale del while
+        }
+        if(strcmp(ebr->part_name,name)==0){
+            flag_name = true;
+        }
     }else if(mbr->mbr_particion_3.part_type=='e'){
-
+        fseek(file,mbr->mbr_particion_3.part_start+sizeof (EBR)+1,SEEK_SET);
+        fread(ebr,sizeof (EBR),1,file);
+        next = ebr->part_next;
+        while(next!=-1){
+            if(strcmp(ebr->part_name,name)==0){
+                flag_name = true;
+                break;
+            }
+            fseek(file, next, SEEK_SET);// se posiciona en donde debe estar el ebr
+            fread(ebr, sizeof(EBR), 1, file);// leo el ebr
+            next = ebr->part_next;//obtengo el next, si es -1 se sale del while
+        }
+        if(strcmp(ebr->part_name,name)==0){
+            flag_name = true;
+        }
     }else if(mbr->mbr_particion_4.part_type=='e'){
-
+        fseek(file,mbr->mbr_particion_4.part_start+sizeof (EBR)+1,SEEK_SET);
+        fread(ebr,sizeof (EBR),1,file);
+        next = ebr->part_next;
+        while(next!=-1){
+            if(strcmp(ebr->part_name,name)==0){
+                flag_name = true;
+                break;
+            }
+            fseek(file, next, SEEK_SET);// se posiciona en donde debe estar el ebr
+            fread(ebr, sizeof(EBR), 1, file);// leo el ebr
+            next = ebr->part_next;//obtengo el next, si es -1 se sale del while
+        }
+        if(strcmp(ebr->part_name,name)==0){
+            flag_name = true;
+        }
     }
     return flag_name;
 }
@@ -165,11 +332,44 @@ int contadorEBR(MBR* mbr,EBR* ebr,FILE*file){
 
         return contaebr;
     }else if(mbr->mbr_particion_2.part_type=='e'){
+        fseek(file, mbr->mbr_particion_2.part_start+sizeof(EBR)+1 ,SEEK_SET);// me posiciono
+        fread(ebr, sizeof(EBR), 1, file);
+        next = ebr->part_next;
+        while(next!=-1){
+            fseek(file, next, SEEK_SET);// se posiciona en donde debe estar el ebr
+            fread(ebr, sizeof(EBR), 1, file);// leo el ebr
+            next = ebr->part_next;//obtengo el next, si es -1 se sale del while
+            contaebr++;
+        }
+        contaebr++;
 
+        return contaebr;
     }else if(mbr->mbr_particion_3.part_type=='e'){
+        fseek(file, mbr->mbr_particion_3.part_start+sizeof(EBR)+1 ,SEEK_SET);// me posiciono
+        fread(ebr, sizeof(EBR), 1, file);
+        next = ebr->part_next;
+        while(next!=-1){
+            fseek(file, next, SEEK_SET);// se posiciona en donde debe estar el ebr
+            fread(ebr, sizeof(EBR), 1, file);// leo el ebr
+            next = ebr->part_next;//obtengo el next, si es -1 se sale del while
+            contaebr++;
+        }
+        contaebr++;
 
+        return contaebr;
     }else if(mbr->mbr_particion_4.part_type=='e'){
+        fseek(file, mbr->mbr_particion_4.part_start+sizeof(EBR)+1 ,SEEK_SET);// me posiciono
+        fread(ebr, sizeof(EBR), 1, file);
+        next = ebr->part_next;
+        while(next!=-1){
+            fseek(file, next, SEEK_SET);// se posiciona en donde debe estar el ebr
+            fread(ebr, sizeof(EBR), 1, file);// leo el ebr
+            next = ebr->part_next;//obtengo el next, si es -1 se sale del while
+            contaebr++;
+        }
+        contaebr++;
 
+        return contaebr;
     }
     return contaebr;
 }
@@ -770,6 +970,7 @@ void imprimirValoresDisco(char path[]) {
                                 int ant = 0;
                                 //fseek(file,pos,SEEK_SET);
                                 //fread(ebr,sizeof(EBR),1,file);
+                                //reviso si tiene siguiente
                                 while (pos != -1) {//reviso si tiene siguiente
                                     ant = pos;
                                     fseek(file, pos, SEEK_SET);// se posiciona en donde debe estar el ebr
@@ -1047,6 +1248,7 @@ void imprimirValoresDisco(char path[]) {
                 printf("Valor : %c\n", valor_fit);
 
             } else if (strcmp(linecomandos, "-delete=") == 0) {
+
                 printf("Encontro : %s\n", linecomandos);
                 flag_delete = true;
                 memset(linecomandos, 0, 100);
@@ -1139,38 +1341,46 @@ void imprimirValoresDisco(char path[]) {
             }
         }
         //conversion de char a enteros para ser usados mas adelante
-        if (valor_unit == 'b') {
-            tamano_bytes = charToInt(valor_size);
-        } else if (valor_unit == 'k') {
-            tamano_bytes = 1024 * charToInt(valor_size);
-        } else if (valor_unit == 'm') {
-            tamano_bytes = 1024 * 1024 * charToInt(valor_size);
-        }else{
-            printf("Error -> Valor de unit no reconocido\n");
-            flag_creation = false;
-        }
+       if(flag_unit==true){
+           if (valor_unit == 'b') {
+               tamano_bytes = charToInt(valor_size);
+           } else if (valor_unit == 'k') {
+               tamano_bytes = 1024 * charToInt(valor_size);
+           } else if (valor_unit == 'm') {
+               tamano_bytes = 1024 * 1024 * charToInt(valor_size);
+           }else{
+               printf("Error -> Valor de unit no reconocido\n");
+               flag_creation = false;
+           }
+       }
 
         //validcion de type
-        if(valor_type=='p' || valor_type=='e'||valor_type=='l'){
-            flag_creation = true;
-        }else{
-            printf("Error -> Valor de type no reconocido\n");
-            flag_creation = false;
+        if(flag_type==true){
+            if(valor_type=='p' || valor_type=='e'||valor_type=='l'){
+                flag_creation = true;
+            }else{
+                printf("Error -> Valor de type no reconocido\n");
+                flag_creation = false;
+            }
         }
 
-        //validacion de fit
-        if(valor_fit=='b' || valor_fit=='f' || valor_fit=='w'){
-            flag_creation=true;
-        }else{
-            printf("Error -> Valor de fit no reconocido\n");
-            flag_creation = false;
+        if(flag_fit==true){
+            //validacion de fit
+            if(valor_fit=='b' || valor_fit=='f' || valor_fit=='w'){
+                flag_creation=true;
+            }else{
+                printf("Error -> Valor de fit no reconocido\n");
+                flag_creation = false;
+            }
         }
 
 
 
         //validacion de entrada
         if (flag_delete == true) { // es para eliminar un particion
+
             printf("Eliminar particion \n");
+            delete_fdisk(valor_name,nuevo_path,valor_delete);
         } else if (flag_add == true) {// es para reducir o aumentar un particion
             printf("Reducir o aumentar particion \n");
         } else {//crear particion

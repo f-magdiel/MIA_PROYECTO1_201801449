@@ -9,11 +9,143 @@
 
 using namespace std;
 DISCO discos[99];
+
 char lineacom[100]="";
 char lineun[100]="";
+char lline[100]="";
 int contaDisk=0;
 int abd=0;
 char abdecedario[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+
+void analisisreporte(char comando[]){
+    int cont=0;
+    char valor_name[16]="";
+    char valor_path[100]="";
+    char valor_id[10]="";
+    char valor_ruta[100]="";
+    char valor_real_path[100]="";
+
+    bool flag_name = false;
+    bool flag_path=false;
+    bool flag_id = false;
+    bool flag_ruta = false;
+
+    while(comando[cont]!=NULL){
+        if (comando[cont] == ' ') {
+            cont++;
+            memset(lline, 0, 100);
+        } else if (comando[cont] == '=') {
+            char aux[1] = "";
+            aux[0] = tolower(comando[cont]);
+            strncat(lline, aux, 1);
+            cont++;
+        } else {
+            char aux[1] = "";
+            aux[0] = tolower(comando[cont]);
+            strncat(lline, aux, 1);
+            cont++;
+        }
+        if(strcmp(lline,"rep")==0){
+            printf("Encontro : %s\n",valor_name);
+            memset(lline,0,100);
+            cont++;
+        }else if(strcmp(lline,"-name=")==0){
+            printf("Encontro : %s\n",valor_name);
+            memset(lline,0,100);
+            flag_name = true;
+            while (comando[cont] != NULL) {
+                if (comando[cont] == ' ' || comando[cont] == '\n') {
+                    cont++;
+                    break;
+                } else {
+                    char aux[1] = "";
+                    aux[0] = comando[cont];
+                    strncat(valor_name, aux, 1);
+                    cont++;
+                }
+            }
+            printf("Valor: %c\n", valor_name);
+        }else if(strcmp(lline,"-path=")==0){
+            printf("Encontro : %s\n",valor_name);
+            memset(lline,0,100);
+            flag_path = true;
+            while (comando[cont] != NULL) {
+                if (comando[cont] == '"') {
+                    cont++;
+                    while (comando[cont] != NULL) {
+                        if (comando[cont] == '"') {
+                            cont++;
+                            break;
+                        } else {
+                            char aux[1] = "";
+                            aux[0] = comando[cont];
+                            strncat(valor_path, aux, 1);
+                            cont++;
+                        }
+                    }
+                } else {
+                    if (comando[cont] == ' ' || comando[cont] == '\n') {
+                        cont++;
+                        break;
+                    } else {
+                        char aux[1] = "";
+                        aux[0] = comando[cont];
+                        strncat(valor_path, aux, 1);
+                        cont++;
+                    }
+                }
+            }
+            printf("Valor: %c\n", valor_path);
+        }else if(strcmp(lline,"-id=")==0){
+            printf("Encontro : %s\n",valor_id);
+            memset(lline,0,100);
+            flag_id = true;
+            while (comando[cont] != NULL) {
+                if (comando[cont] == ' ' || comando[cont] == '\n') {
+                    cont++;
+                    break;
+                } else {
+                    char aux[1] = "";
+                    aux[0] = comando[cont];
+                    strncat(valor_id, aux, 1);
+                    cont++;
+                }
+            }
+            printf("Valor: %c\n", valor_id);
+        }else if(strcmp(lline,"-ruta=")==0){
+            printf("Encontro : %s\n",valor_ruta);
+            memset(lline,0,100);
+            flag_ruta = true;
+            while (comando[cont] != NULL) {
+                if (comando[cont] == ' ' || comando[cont] == '\n') {
+                    cont++;
+                    break;
+                } else {
+                    char aux[1] = "";
+                    aux[0] = comando[cont];
+                    strncat(valor_ruta, aux, 1);
+                    cont++;
+                }
+            }
+            printf("Valor: %c\n", valor_ruta);
+        }
+    }
+    DISCO disk[1];
+    //validaciones
+    for (int i = 0; i < 99; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            if(strcmp(valor_id,discos[i].particion[j].id)==0){
+                disk[0] = discos[i];
+            }
+        }
+    }
+
+
+
+}
+
+
+
 void analisismount(char comando[]){
     int contador=0;
     char valor_path_m[100]="";
@@ -191,6 +323,10 @@ void montaje(char _name[],char _path[]){
                     int num = discos[iterador].num;
                     discos[iterador].particion[0].status = mbr->mbr_particion_1.part_status;// status para particion
                     discos[iterador].num = num;//numero para disco
+                    discos[iterador].tamano = mbr->mbr_tamano;
+                    discos[iterador].signatura = mbr->mbr_dsk_signature;
+                    discos[iterador].fecha = mbr->mbr_fecha_creacion;
+                    discos[iterador].fit = mbr->dsk_fit;
                     strcpy(discos[iterador].path,_path);
                     strcpy(discos[iterador].particion[0].name,_name);
                     //gerando id
@@ -218,6 +354,10 @@ void montaje(char _name[],char _path[]){
                 }else{// no sea ha ingresado nada
                     discos[contaDisk].particion[0].status = mbr->mbr_particion_1.part_status;// status para particion
                     discos[contaDisk].num = contaDisk+1;//numero para disco
+                    discos[contaDisk].tamano = mbr->mbr_tamano;
+                    discos[contaDisk].signatura = mbr->mbr_dsk_signature;
+                    discos[contaDisk].fecha = mbr->mbr_fecha_creacion;
+                    discos[contaDisk].fit = mbr->dsk_fit;
                     strcpy(discos[contaDisk].path,_path);
                     strcpy(discos[contaDisk].particion[0].name,_name);
                     //gerando id
@@ -253,6 +393,10 @@ void montaje(char _name[],char _path[]){
                     int num = discos[iterador].num;
                     discos[iterador].particion[1].status = mbr->mbr_particion_2.part_status;// status para particion
                     discos[iterador].num = num;//numero para disco
+                    discos[iterador].tamano = mbr->mbr_tamano;
+                    discos[iterador].signatura = mbr->mbr_dsk_signature;
+                    discos[iterador].fecha = mbr->mbr_fecha_creacion;
+                    discos[iterador].fit = mbr->dsk_fit;
                     strcpy(discos[iterador].path,_path);
                     strcpy(discos[iterador].particion[1].name,_name);
                     //gerando id
@@ -280,6 +424,10 @@ void montaje(char _name[],char _path[]){
                 }else{// no sea ha ingresado nada
                     discos[contaDisk].particion[1].status = mbr->mbr_particion_2.part_status;// status para particion
                     discos[contaDisk].num = contaDisk+1;//numero para disco
+                    discos[contaDisk].tamano = mbr->mbr_tamano;
+                    discos[contaDisk].signatura = mbr->mbr_dsk_signature;
+                    discos[contaDisk].fecha = mbr->mbr_fecha_creacion;
+                    discos[contaDisk].fit = mbr->dsk_fit;
                     strcpy(discos[contaDisk].path,_path);
                     strcpy(discos[contaDisk].particion[1].name,_name);
                     //gerando id
@@ -315,6 +463,10 @@ void montaje(char _name[],char _path[]){
                     int num = discos[iterador].num;
                     discos[iterador].particion[2].status = mbr->mbr_particion_3.part_status;// status para particion
                     discos[iterador].num = num;//numero para disco
+                    discos[iterador].tamano = mbr->mbr_tamano;
+                    discos[iterador].signatura = mbr->mbr_dsk_signature;
+                    discos[iterador].fecha = mbr->mbr_fecha_creacion;
+                    discos[iterador].fit = mbr->dsk_fit;
                     strcpy(discos[iterador].path,_path);
                     strcpy(discos[iterador].particion[2].name,_name);
                     //gerando id
@@ -342,6 +494,10 @@ void montaje(char _name[],char _path[]){
                 }else{// no sea ha ingresado nada
                     discos[contaDisk].particion[2].status = mbr->mbr_particion_3.part_status;// status para particion
                     discos[contaDisk].num = contaDisk+1;//numero para disco
+                    discos[contaDisk].tamano = mbr->mbr_tamano;
+                    discos[contaDisk].signatura = mbr->mbr_dsk_signature;
+                    discos[contaDisk].fecha = mbr->mbr_fecha_creacion;
+                    discos[contaDisk].fit = mbr->dsk_fit;
                     strcpy(discos[contaDisk].path,_path);
                     strcpy(discos[contaDisk].particion[2].name,_name);
                     //gerando id
@@ -377,6 +533,10 @@ void montaje(char _name[],char _path[]){
                     int num = discos[iterador].num;
                     discos[iterador].particion[3].status = mbr->mbr_particion_4.part_status;// status para particion
                     discos[iterador].num = num;//numero para disco
+                    discos[iterador].tamano = mbr->mbr_tamano;
+                    discos[iterador].signatura = mbr->mbr_dsk_signature;
+                    discos[iterador].fecha = mbr->mbr_fecha_creacion;
+                    discos[iterador].fit = mbr->dsk_fit;
                     strcpy(discos[iterador].path,_path);
                     strcpy(discos[iterador].particion[3].name,_name);
                     //gerando id
@@ -404,6 +564,10 @@ void montaje(char _name[],char _path[]){
                 }else{// no sea ha ingresado nada
                     discos[contaDisk].particion[3].status = mbr->mbr_particion_4.part_status;// status para particion
                     discos[contaDisk].num = contaDisk+1;//numero para disco
+                    discos[contaDisk].tamano = mbr->mbr_tamano;
+                    discos[contaDisk].signatura = mbr->mbr_dsk_signature;
+                    discos[contaDisk].fecha = mbr->mbr_fecha_creacion;
+                    discos[contaDisk].fit = mbr->dsk_fit;
                     strcpy(discos[contaDisk].path,_path);
                     strcpy(discos[contaDisk].particion[3].name,_name);
                     //gerando id
