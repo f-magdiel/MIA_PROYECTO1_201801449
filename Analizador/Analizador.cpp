@@ -73,7 +73,7 @@ void analizarComando(char comando[]){
             analisisreporte(comando);
             memset(lineacomandos,0,100);
         }else if(strcmp(lineacomandos,"pause")==0){
-            printf("Pausa por por el comando pause\n");
+            printf("Pausa por el comando pause\n");
             int c = getchar();
         }
     }
