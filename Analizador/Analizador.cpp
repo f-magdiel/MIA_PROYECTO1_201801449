@@ -5,7 +5,7 @@
 #include "../Comandos/rmdisk.h"
 #include "../Comandos/fdisk.h"
 #include "../Comandos/mount.h"
-#include "../Comandos/rep.h"
+
 
 #include <string>
 #include <fstream>

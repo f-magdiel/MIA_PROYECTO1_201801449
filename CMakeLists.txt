@@ -3,4 +3,4 @@ project(MIA_PROYECTO1_201801449)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(MIA_PROYECTO1_201801449 main.cpp Analizador/Analizador.cpp Inicio/Inicio.cpp Comandos/mkdisk.cpp Comandos/exec.cpp Archivo/AbrirArchivo.cpp Comandos/rmdisk.cpp Comandos/fdisk.cpp Comandos/mount.cpp Comandos/rep.cpp)
+add_executable(MIA_PROYECTO1_201801449 main.cpp Analizador/Analizador.cpp Inicio/Inicio.cpp Comandos/mkdisk.cpp Comandos/exec.cpp Archivo/AbrirArchivo.cpp Comandos/rmdisk.cpp Comandos/fdisk.cpp Comandos/mount.cpp)
